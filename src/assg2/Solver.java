@@ -15,9 +15,8 @@ public class Solver {
 	 */
 	public static void main(String[] args) {
 		Solver m = new Solver();
-		m.solve(PATH);
-//		int answer = m.solve(null);
-//		System.out.println(answer);
+		int answer = m.solve(null);
+		System.out.println(answer);
 		
 	}
 	
@@ -33,12 +32,75 @@ public class Solver {
 	public int solve(String infile) {
 		try {
 			readData(infile);
-			System.out.println(Arrays.deepToString(arr.toArray()));
+//			printArray();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		return 0;
+		HashMap<Integer, Integer> lookUp = new HashMap<>();
+		int highestBid = 0;
+		int returnValue = firstForLoop(highestBid, lookUp);
+		System.out.println(returnValue);
+		return returnValue;
+		
+	}
+	
+	public void printArray() {
+		System.out.println(Arrays.deepToString(arr.toArray()));
+	}
+	
+	/**
+	 * 
+	 * arr()[0] = index Value;
+	 * arr()[1] = starting Bid;
+	 * arr()[2] = final Bid;
+	 * arr()[3] = Price;
+	 * 
+	 */
+	
+	int secondForLoop(int i, int finalBid, ArrayList<int[]> array, Map<Integer,Integer> lookUp) {
+		
+		int startBid, lotPrice = 0;
+		int total = 0;
+		
+		for (int j = i+1; j < array.size(); j++) {
+			startBid = array.get(j)[1];
+			lotPrice = array.get(j)[3];
+//			System.out.println(" j: " + j);
+			if (startBid > finalBid) {
+				Integer maxValue = lookUp.getOrDefault(i, null);
+				int subTreeTotal = 0;
+				if (maxValue == null)
+					subTreeTotal = secondForLoop(j, array.get(j)[2], array, lookUp);
+				else
+					subTreeTotal = maxValue;
+				if (subTreeTotal > total) {
+					total = subTreeTotal;
+					lookUp.put(i , total);
+				}
+			}
+		}
+		return array.get(i)[3] + total;
+		
+	}
+	
+	int firstForLoop(int highestBid, Map<Integer,Integer> lookUp) {
+		int max = 0;
+//		int finalBid;
+		
+		for (int i = 0; i < arr.size(); i++) {
+			
+//			finalBid = arr.get(i)[2];
+
+			// method call here
+			// method returns highest value of that particular sub-tree
+//			System.out.println("I = " + i);
+			int compatibleBids = secondForLoop(i, arr.get(i)[2], arr, lookUp);
+			if (compatibleBids > highestBid)
+				highestBid = compatibleBids;
+//			System.out.println(max);
+		}
+		return highestBid;
 	}
 
 	/**
@@ -82,11 +144,30 @@ public class Solver {
    	   			
    				int[] arr2 = {index, startBid, finalBid, lotPrice};
    				arr.add(arr2);
+   				
    			}
-   	   		arr.sort(Comparator.comparingInt(c -> c[1]));
+   	   		
+   	   		arr.sort(Comparator.comparingInt(c -> c[2]));
+   	   		
    		}
    		in.close();
    		
 	}
 
 }
+
+//for (int j = i+1; j < arr.size(); j++) {
+//
+//startBid = arr.get(j)[1];
+//lotPriceJ = arr.get(j)[3];
+////finalBid = arr.get(j)[2];
+//
+//System.out.println("total: " + total + " i: " + i + " j: " + j);
+//if (startBid > finalBid) {
+//	total += lotPriceJ;
+//	finalBid = arr.get(j)[2];
+//	System.out.println("This is the final bid: " + finalBid);
+//	//System.out.println("The total after the if condition: " + total);
+//}
+////System.out.println(total);				
+//}

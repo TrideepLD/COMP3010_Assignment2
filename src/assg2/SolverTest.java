@@ -10,7 +10,7 @@ public class SolverTest {
 	private static Solver s;
 
 	// change the path as necessary
-	private String PATH = "src/data/";
+	private String PATH = "src/assg2/data/";
 	
 	@Before 
 	public void initialize() {
@@ -52,38 +52,32 @@ public class SolverTest {
 		assertEquals(expected,actual);
 	}
 	
-	@Test (timeout=500)
+	@Test
 	public void testSmall_6() {
 		int expected = 13520;
 		int actual = s.solve(PATH + "test_case_06.in");
 		assertEquals(expected,actual);
 	}
 	
-	@Test (timeout=500)
+	@Test
 	public void testSmall_7() {
 		int expected = 28146;
 		int actual = s.solve(PATH + "test_case_07.in");
 		assertEquals(expected,actual);
 	}
 	
-	@Test (timeout=500)
+	@Test
 	public void testSmall_8() {
 		int expected = 48798;
 		int actual = s.solve(PATH + "test_case_08.in");
 		assertEquals(expected,actual);
 	}
 	
-	@Test (timeout=500)
+	@Test
 	public void testSmall_9() {
 		int expected = 138504;
 		int actual = s.solve(PATH + "test_case_09.in");
 		assertEquals(expected,actual);
 	}
 	
-	@Test (timeout=500)
-	public void testSmall_10() {
-		int expected = 174534;
-		int actual = s.solve(PATH + "test_case_10.in");
-		assertEquals(expected,actual);
-	}
 }
