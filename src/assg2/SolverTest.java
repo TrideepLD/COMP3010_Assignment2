@@ -8,6 +8,7 @@ import org.junit.Test;
 public class SolverTest {
 
 	private static Solver s;
+//	private static Solver_with_lookup s;
 
 	// change the path as necessary
 	private String PATH = "src/assg2/data/";
@@ -15,6 +16,7 @@ public class SolverTest {
 	@Before 
 	public void initialize() {
 		s = new Solver();
+//		s = new Solver_with_lookup();
 	}
 	
 	@Test (timeout=500)
@@ -52,28 +54,28 @@ public class SolverTest {
 		assertEquals(expected,actual);
 	}
 	
-	@Test
+	@Test (timeout=500)
 	public void testSmall_6() {
 		int expected = 13520;
 		int actual = s.solve(PATH + "test_case_06.in");
 		assertEquals(expected,actual);
 	}
 	
-	@Test
+	@Test (timeout=500)
 	public void testSmall_7() {
 		int expected = 28146;
 		int actual = s.solve(PATH + "test_case_07.in");
 		assertEquals(expected,actual);
 	}
 	
-	@Test
+	@Test (timeout=500)
 	public void testSmall_8() {
 		int expected = 48798;
 		int actual = s.solve(PATH + "test_case_08.in");
 		assertEquals(expected,actual);
 	}
 	
-	@Test
+	@Test (timeout=500)
 	public void testSmall_9() {
 		int expected = 138504;
 		int actual = s.solve(PATH + "test_case_09.in");

@@ -3,7 +3,7 @@ package assg2;
 import java.io.*;
 import java.util.*;
 
-public class Solver {
+public class Solver_with_lookup {
 
 	int bids, lots;
 	List<Bid> bidList;
@@ -32,7 +32,7 @@ public class Solver {
 	 * own tests and add it to the jUnit tests.
 	 */
 	public static void main(String[] args) {
-		Solver m = new Solver();
+		Solver_with_lookup m = new Solver_with_lookup();
 		int answer = m.solve(null);
 		System.out.println(answer);
 	}
