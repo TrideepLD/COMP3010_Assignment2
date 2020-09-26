@@ -8,13 +8,15 @@ import org.junit.Test;
 public class SolverTest {
 
 	private static Solver s;
+//	private static Solver_with_lookup s;
 
 	// change the path as necessary
-	private String PATH = "src/data/";
+	private String PATH = "src/assg2/data/";
 	
 	@Before 
 	public void initialize() {
 		s = new Solver();
+//		s = new Solver_with_lookup();
 	}
 	
 	@Test (timeout=500)
@@ -80,10 +82,4 @@ public class SolverTest {
 		assertEquals(expected,actual);
 	}
 	
-	@Test (timeout=500)
-	public void testSmall_10() {
-		int expected = 174534;
-		int actual = s.solve(PATH + "test_case_10.in");
-		assertEquals(expected,actual);
-	}
 }

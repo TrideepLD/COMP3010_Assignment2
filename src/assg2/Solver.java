@@ -7,6 +7,7 @@ public class Solver {
 	
 	private static String PATH = "src/assg2/data/test_case_01.in";
 	ArrayList<int[]> arr = new ArrayList<int[]>();
+	ArrayList<int[]> sortedArray = new ArrayList<int[]>();
 	
 	/**
 	 * You can use this to test your program without running the jUnit test,
@@ -15,9 +16,8 @@ public class Solver {
 	 */
 	public static void main(String[] args) {
 		Solver m = new Solver();
-		m.solve(PATH);
-//		int answer = m.solve(null);
-//		System.out.println(answer);
+		int answer = m.solve(null);
+		System.out.println(answer);
 		
 	}
 	
@@ -33,12 +33,110 @@ public class Solver {
 	public int solve(String infile) {
 		try {
 			readData(infile);
-			System.out.println(Arrays.deepToString(arr.toArray()));
+			printArray();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		return 0;
+		int returnValue = 0;
+//		int highestBid = 0;
+//		int returnValue = firstForLoop(highestBid);
+//		System.out.println(returnValue);
+		return firstForLoopButForSortedArray(returnValue);
+		
+	}
+	/**
+	 * 
+	 * arr()[0] = index Value;
+	 * arr()[1] = starting Bid;
+	 * arr()[2] = final Bid;
+	 * arr()[3] = Price;
+	 * 
+	 */
+	public void printArray() {
+//		System.out.println(Arrays.deepToString(arr.toArray()));
+		System.out.println(Arrays.deepToString(sortedArray.toArray()));
+	}
+	
+	int secondForLoop(int i, int finalBid, ArrayList<int[]> array, Map<Integer,Integer> lookUp) {
+		
+		int startBid, lotPrice = 0;
+		int total = 0;
+		
+		for (int j = i+1; j < array.size(); j++) {
+			startBid = array.get(j)[1];
+			lotPrice = array.get(j)[3];
+//			System.out.println(" j: " + j);
+			if (startBid > finalBid) {
+				Integer maxValue = lookUp.getOrDefault(j, null);
+				int subTreeTotal = 0;
+				if (maxValue == null)
+					subTreeTotal = secondForLoop(j, array.get(j)[2], array, lookUp);
+				else
+					subTreeTotal = maxValue;
+				if (subTreeTotal > total) {
+					total = subTreeTotal;
+					lookUp.put(j , total);
+				}
+			}
+		}
+		return array.get(i)[3] + total;
+		
+	}
+	
+	int firstForLoop(int highestBid) {
+		int max = 0;
+//		int finalBid;
+		HashMap<Integer, Integer> lookUp = new HashMap<>();
+		for (int i = 0; i < arr.size(); i++) {
+//			finalBid = arr.get(i)[2];
+			// method call here
+			// method returns highest value of that particular sub-tree
+			int compatibleBids = secondForLoop(i, arr.get(i)[2], arr, lookUp);
+			if (compatibleBids > highestBid)
+				highestBid = compatibleBids;
+		}
+		return highestBid;
+	}
+	
+	int firstForLoopButForSortedArray(int returnedValue) {
+		int max = 0;
+		HashMap<Integer, Integer> lookUp = new HashMap<>();
+		for (int i = 0; i < arr.size(); i++) {
+//			finalBid = arr.get(i)[2];
+			// method call here
+			// method returns highest value of that particular sub-tree
+			int current = secondForLoop(i, sortedArray.get(i)[2], sortedArray, lookUp);
+			if (current > returnedValue)
+				returnedValue = current;
+//				System.out.println(returnedValue);
+		}
+		return returnedValue;
+	}
+	
+	int nestedForLoopWhichIsUsedForRecursion(int i, int finalBid, ArrayList<int[]> array, Map<Integer,Integer> lookUp) {
+		int startBid, lotPrice = 0;
+		int total = 0;
+		
+		for (int j = i+1; j < array.size(); j++) {
+			startBid = array.get(j)[1];
+			lotPrice = array.get(j)[3];
+//			System.out.println(" j: " + j);
+			if (startBid > finalBid) {
+				Integer maxValue = lookUp.getOrDefault(j, null);
+				int subTreeTotal = 0;
+				if (maxValue == null)
+					subTreeTotal = secondForLoop(j, array.get(j)[2], array, lookUp);
+				else
+					subTreeTotal = maxValue;
+				if (subTreeTotal > total) {
+					total = subTreeTotal;
+					lookUp.put(j , total);
+				}
+			}
+		}
+		
+		return array.get(i)[3] + total;
 	}
 
 	/**
@@ -56,7 +154,6 @@ public class Solver {
    	public void readData(String infile) throws Exception {
    		Scanner in = new Scanner(new FileReader(infile));
    		
-   		
    		while (in.hasNext()) {
    			int lots;
    	   		int bids;
@@ -64,7 +161,6 @@ public class Solver {
    	   		bids = in.nextInt();
    	   		System.out.println("Lots: " + lots + " bids: " + bids);
    	   			
-
    	   		for (int i = 0; i < bids ; i++) {
    	   	   		int index = in.nextInt();
    	   	   		System.out.print(index);
@@ -82,11 +178,11 @@ public class Solver {
    	   			
    				int[] arr2 = {index, startBid, finalBid, lotPrice};
    				arr.add(arr2);
+   				sortedArray.add(arr2);
    			}
-   	   		arr.sort(Comparator.comparingInt(c -> c[1]));
+   	   		arr.sort(Comparator.comparingInt(c -> c[2]));
+   	   		sortedArray.sort(Comparator.comparingInt(c -> c[1]));
    		}
    		in.close();
-   		
 	}
-
 }
