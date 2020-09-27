@@ -51,24 +51,28 @@ public class Solver {
 	
 	/**
 	 * 
-	 * @param returnedValue
+	 * @param maxIncome
 	 * @return returns the maximum income.
 	 * 
 	 * Initiates a lookup table to be used by the recursive method
-	 * and goes through each array atleast once to find potential sub-trees
+	 * and goes through each array at least once to find potential sub-trees
+	 * The income value serves as a way to get the returned value from the recursion
+	 * 
+	 * The maxIncome is continually updated when the returned value(income) from the recursion is greater than it.
+	 * The Final lot variable is also initialized here which is useful for the comparison that happens in the recursion
 	 */
 	
 	int findMaxIncome(int maxIncome) {
 		
 		HashMap<Integer, Integer> lookUpTable = new HashMap<>();
 		int size = (sortedArray.size())/2;
-		int finalBid;
+		int finalLot;
 		int income = 0;
 		
 		for (int i = 0; i < size; i++) {
-			finalBid = sortedArray.get(i)[2];
+			finalLot = sortedArray.get(i)[2];
 			
-			income = maxIncomeRecursion(i, finalBid, income, sortedArray, lookUpTable);
+			income = maxIncomeRecursion(i, finalLot, income, sortedArray, lookUpTable);
 			if (income > maxIncome) {
 				maxIncome = income;
 			}
@@ -76,24 +80,40 @@ public class Solver {
 		return maxIncome;
 	}
 	
-	int maxIncomeRecursion(int i, int finalBid, int income, ArrayList<int[]> array, Map<Integer,Integer> lookUpTable) {
+	
+	/**
+	 * 
+	 * @param i this is the i variable from the for loop in findMaxIncome
+	 * @param finalLot this is the finalLot variable initialized in fixMaxIncome. It is the finalLot of the parent subtree of the recursion
+	 * @param income
+	 * @param array the sorted Array
+	 * @param lookUpTable the LookUpTable which stores subtree solutions
+	 * @return returns income which is then used to check in findMaxIncome for the Maximum possible income gotten
+	 * 
+	 * a startLot and FinalLotOfJ is initialized. Start lot is used for the comparison to allow us to choose the right subtree
+	 * FinalLotOfJ is simply initializing the FinalLot at the J array to use in the recursion
+	 * 
+	 * we have a lookUp table here which stores subtree solutions if it has not encountered it
+	 * And if the value gotten from the recursion/in the lookUp is greater than the income/total we substitute the value in income/total
+	 */
+	int maxIncomeRecursion(int i, int finalLot, int income, ArrayList<int[]> array, Map<Integer,Integer> lookUpTable) {
 		
-		int startBid, price, total;
+		int startLot, price, total;
 		
 		total = 0;
 		price = array.get(i)[3];
 		
 		for (int j = i+1; j < array.size(); j++) {
 			
-			startBid = array.get(j)[1];
+			startLot = array.get(j)[1];
 			
-			if (startBid>finalBid) {
+			if (startLot>finalLot) {
 				
-				int finalBidOfJ = array.get(j)[2];
+				int finalLotOfJ = array.get(j)[2];
 				Integer storedSubtree = lookUpTable.getOrDefault(j, null);
 				
 				if (storedSubtree == null) {
-					storedSubtree = maxIncomeRecursion(j, finalBidOfJ, income, array, lookUpTable);
+					storedSubtree = maxIncomeRecursion(j, finalLotOfJ, income, array, lookUpTable);
 				}
 				
 				if (storedSubtree > total) {
@@ -135,18 +155,9 @@ public class Solver {
    	   			
    	   		for (int i = 0; i < bids ; i++) {
    	   	   		int index = in.nextInt();
-   	   	   		System.out.print(index);
-   	   	   		System.out.print(" ");
    				int startBid = in.nextInt();
-   				System.out.print(startBid);
-   				System.out.print(" ");
    				int finalBid = in.nextInt();
-   				System.out.print(finalBid);
-   				System.out.print(" ");
    				int lotPrice = in.nextInt();
-   	   			System.out.print(lotPrice);
-   	   			System.out.print(" ");
-   	   			System.out.println("");
    	   			
    				int[] arr = {index, startBid, finalBid, lotPrice};
    				sortedArray.add(arr);
