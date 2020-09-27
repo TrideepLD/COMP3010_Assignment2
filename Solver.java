@@ -24,8 +24,9 @@ public class Solver {
 			this.end = end;
 			this.price = price;
 		}
+
 		@Override
-		public String toString() { return start + " " + end + " " + price; }
+		public String toString() { return start  + " " +  end + " " + price; }
 	}
 
 	/**
@@ -62,15 +63,15 @@ public class Solver {
 		}
 	}
 
-	/** The solve method accepts a String containing the 
+	/** The solve method accepts a String containing the
 	 * path to the input file for the problem (as described
 	 * in the assignment specification) and returns an integer
-	 * denoting the maximum income 
-	 * 
+	 * denoting the maximum income
+	 *
 	 * @param infile the file containing the input
 	 * @return maximum income for this set of input
 	 */
-	
+
 	public int solve(String infile) {
 		try {
 			readData(infile);
@@ -83,23 +84,32 @@ public class Solver {
 		HashMap<Integer, Integer> lookUp = new HashMap<>();
 		int highestBid = 0;
 		for (int i = 0; i < bids; i++) {
-			int compatibleBids = getMaximumCompatible(bidList.get(i).end, i, bidList, lookUp);
-			if (compatibleBids > highestBid)
+		 	Integer compatibleBids = lookUp.getOrDefault(i, null);
+		 	if (compatibleBids == null) {
+		 		compatibleBids = getMaximumCompatiblePrice(bidList.get(i).end, i, bidList, lookUp);
+			}
+			if (compatibleBids > highestBid) {
 				highestBid = compatibleBids;
+			}
+			lookUp.put(i , compatibleBids);
 		}
 		return highestBid;
 	}
 
-	private int getMaximumCompatible(int end, int n, List<Bid> bidList, Map<Integer,Integer> lookUp) {
+	private int getMaximumCompatiblePrice(int end, int n, List<Bid> bidList, Map<Integer,Integer> lookUp) {
 		Bid bid = bidList.get(n);
 		int value = 0;
 		for (int i = n + 1; i < bidList.size(); i++) {
 			Bid candidateBid = bidList.get(i);
 			if (candidateBid.start > end) {
-				int subTreeTotal = getMaximumCompatible(candidateBid.end, i, bidList, lookUp);
+				Integer subTreeTotal = lookUp.getOrDefault(i, null);;
+				if (subTreeTotal == null) {
+					subTreeTotal = getMaximumCompatiblePrice(candidateBid.end, i, bidList, lookUp);
+				}
 				if (subTreeTotal > value) {
 					value = subTreeTotal;
 				}
+				lookUp.put(i , subTreeTotal);
 			}
 		}
 		return bid.price + value;

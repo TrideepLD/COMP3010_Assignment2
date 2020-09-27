@@ -5,9 +5,16 @@ import java.util.*;
 
 public class Solver {
 	
-	private static String PATH = "src/assg2/data/test_case_01.in";
-	ArrayList<int[]> arr = new ArrayList<int[]>();
+	private String PATH = "src/assg2/data/test_case_01.in";
 	ArrayList<int[]> sortedArray = new ArrayList<int[]>();
+	/**
+	 * 
+	 * sortedArray()[0] = index Value;
+	 * sortedArray()[1] = starting Bid;
+	 * sortedArray()[2] = final Bid;
+	 * sortedArray()[3] = Price;
+	 * 
+	 */
 	
 	/**
 	 * You can use this to test your program without running the jUnit test,
@@ -33,112 +40,74 @@ public class Solver {
 	public int solve(String infile) {
 		try {
 			readData(infile);
-			printArray();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		int returnValue = 0;
-//		int highestBid = 0;
-//		int returnValue = firstForLoop(highestBid);
-//		System.out.println(returnValue);
-		return firstForLoopButForSortedArray(returnValue);
+		int maxIncome = 0;
+		return findMaxIncome(maxIncome);
 		
 	}
+	
 	/**
 	 * 
-	 * arr()[0] = index Value;
-	 * arr()[1] = starting Bid;
-	 * arr()[2] = final Bid;
-	 * arr()[3] = Price;
+	 * @param returnedValue
+	 * @return returns the maximum income.
 	 * 
+	 * Initiates a lookup table to be used by the recursive method
+	 * and goes through each array atleast once to find potential sub-trees
 	 */
-	public void printArray() {
-//		System.out.println(Arrays.deepToString(arr.toArray()));
-		System.out.println(Arrays.deepToString(sortedArray.toArray()));
-	}
 	
-	int secondForLoop(int i, int finalBid, ArrayList<int[]> array, Map<Integer,Integer> lookUp) {
+	int findMaxIncome(int maxIncome) {
 		
-		int startBid, lotPrice = 0;
-		int total = 0;
+		HashMap<Integer, Integer> lookUpTable = new HashMap<>();
+		int size = (sortedArray.size())/2;
+		int finalBid;
+		int income = 0;
 		
-		for (int j = i+1; j < array.size(); j++) {
-			startBid = array.get(j)[1];
-			lotPrice = array.get(j)[3];
-//			System.out.println(" j: " + j);
-			if (startBid > finalBid) {
-				Integer maxValue = lookUp.getOrDefault(j, null);
-				int subTreeTotal = 0;
-				if (maxValue == null)
-					subTreeTotal = secondForLoop(j, array.get(j)[2], array, lookUp);
-				else
-					subTreeTotal = maxValue;
-				if (subTreeTotal > total) {
-					total = subTreeTotal;
-					lookUp.put(j , total);
-				}
+		for (int i = 0; i < size; i++) {
+			finalBid = sortedArray.get(i)[2];
+			
+			income = maxIncomeRecursion(i, finalBid, income, sortedArray, lookUpTable);
+			if (income > maxIncome) {
+				maxIncome = income;
 			}
 		}
-		return array.get(i)[3] + total;
+		return maxIncome;
+	}
+	
+	int maxIncomeRecursion(int i, int finalBid, int income, ArrayList<int[]> array, Map<Integer,Integer> lookUpTable) {
 		
-	}
-	
-	int firstForLoop(int highestBid) {
-		int max = 0;
-//		int finalBid;
-		HashMap<Integer, Integer> lookUp = new HashMap<>();
-		for (int i = 0; i < arr.size(); i++) {
-//			finalBid = arr.get(i)[2];
-			// method call here
-			// method returns highest value of that particular sub-tree
-			int compatibleBids = secondForLoop(i, arr.get(i)[2], arr, lookUp);
-			if (compatibleBids > highestBid)
-				highestBid = compatibleBids;
-		}
-		return highestBid;
-	}
-	
-	int firstForLoopButForSortedArray(int returnedValue) {
-		int max = 0;
-		HashMap<Integer, Integer> lookUp = new HashMap<>();
-		for (int i = 0; i < arr.size(); i++) {
-//			finalBid = arr.get(i)[2];
-			// method call here
-			// method returns highest value of that particular sub-tree
-			int current = secondForLoop(i, sortedArray.get(i)[2], sortedArray, lookUp);
-			if (current > returnedValue)
-				returnedValue = current;
-//				System.out.println(returnedValue);
-		}
-		return returnedValue;
-	}
-	
-	int nestedForLoopWhichIsUsedForRecursion(int i, int finalBid, ArrayList<int[]> array, Map<Integer,Integer> lookUp) {
-		int startBid, lotPrice = 0;
-		int total = 0;
+		int startBid, price, total;
+		
+		total = 0;
+		price = array.get(i)[3];
 		
 		for (int j = i+1; j < array.size(); j++) {
+			
 			startBid = array.get(j)[1];
-			lotPrice = array.get(j)[3];
-//			System.out.println(" j: " + j);
-			if (startBid > finalBid) {
-				Integer maxValue = lookUp.getOrDefault(j, null);
-				int subTreeTotal = 0;
-				if (maxValue == null)
-					subTreeTotal = secondForLoop(j, array.get(j)[2], array, lookUp);
-				else
-					subTreeTotal = maxValue;
-				if (subTreeTotal > total) {
-					total = subTreeTotal;
-					lookUp.put(j , total);
+			
+			if (startBid>finalBid) {
+				
+				int finalBidOfJ = array.get(j)[2];
+				Integer storedSubtree = lookUpTable.getOrDefault(j, null);
+				
+				if (storedSubtree == null) {
+					storedSubtree = maxIncomeRecursion(j, finalBidOfJ, income, array, lookUpTable);
 				}
+				
+				if (storedSubtree > total) {
+					total = storedSubtree;
+				}
+				
+				lookUpTable.put(j , storedSubtree);
 			}
 		}
+		income = price+total;
 		
-		return array.get(i)[3] + total;
+		return income;
 	}
-
+	
 	/**
 	 * The readData method accepts a String containing the 
 	 * path to the input file for the problem.
@@ -150,6 +119,9 @@ public class Solver {
 	 * 
 	 * @param infile the input file containing the problem
 	 * @throws Exception if file is not found or if there is an input reading error
+	 * 
+	 * Here the file is read and parsed. Then it is added into a global array(of type ArrayList)
+	 * sorting it to making it easier to find the optimal solution.
 	 */
    	public void readData(String infile) throws Exception {
    		Scanner in = new Scanner(new FileReader(infile));
@@ -176,11 +148,11 @@ public class Solver {
    	   			System.out.print(" ");
    	   			System.out.println("");
    	   			
-   				int[] arr2 = {index, startBid, finalBid, lotPrice};
-   				arr.add(arr2);
-   				sortedArray.add(arr2);
+   				int[] arr = {index, startBid, finalBid, lotPrice};
+   				sortedArray.add(arr);
    			}
-   	   		arr.sort(Comparator.comparingInt(c -> c[2]));
+   	   		// Using lambda function to sort arrayList
+   	   		// Sorts based on start bids.
    	   		sortedArray.sort(Comparator.comparingInt(c -> c[1]));
    		}
    		in.close();
